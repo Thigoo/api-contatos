@@ -40,7 +40,7 @@ const createContact = async (req: Request, res: Response) => {
 
 const patchContact = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
     const { name, phone } = req.body;
 
     if (Number.isNaN(id)) {
