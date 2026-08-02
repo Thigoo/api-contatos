@@ -4,26 +4,48 @@ API REST simples para gerenciamento de contatos, desenvolvida com Node.js, Expre
 
 ## Pré-requisitos
 
-- [Node.js](https://nodejs.org/) (v18 ou superior)
 - [Docker](https://www.docker.com/) e Docker Compose
+
+Não é necessário ter Node.js instalado - tanto a API quanto o banco de dados rodam em containers.
 
 ## Configuração e execução
 
-### 1. Clonar o repositório e instalar dependências
+### 1. Subir a aplicação
+
+Com o repositório clonado, na raiz do projeto:
 
 ```bash
-npm install
+docker compose up -d --build
 ```
 
-### 2. Configurar variáveis de ambiente
+Esse comando sobe dois containers:
 
-Copie o arquivo de exemplo e preencha os valores:
+- **mysql**: banco de dados MySQL 8.0, já com o banco `contacts` e a tabela `contacts` criados automaticamente (via script de inicialização)
+- **api**: a aplicação Node.js/Express, conectada ao banco
+
+Para acompanhar os logs e confirmar que tudo subiu corretamente:
 
 ```bash
-cp .env.example .env
+docker compose logs -f
 ```
 
-Variáveis necessárias:
+A API estará disponível em `http://localhost:3000`.
+
+### 2. Encerrar a aplicação
+
+```bash
+docker compose down
+```
+
+Os dados do banco são preservados entre reinicializações graças a um volume persistente. Para remover também os dados (reset completo):
+
+```bash
+docker compose down -v
+```
+
+## Variáveis de ambiente
+
+As variáveis de conexão com o banco já estão definidas no `docker-compose.yml` para o ambiente containerizado, não sendo necessária configuração manual. Caso queira rodar a API fora do Docker (não recomendado, mas possível para desenvolvimento local), crie um `.env` na raiz com:
 
 ```
 DB_HOST=localhost
@@ -33,39 +55,7 @@ DB_PASSWORD=admin
 DB_NAME=contacts
 ```
 
-### 3. Subir o banco de dados MySQL
-
-O banco roda em container Docker, isolado do ambiente da máquina host:
-
-```bash
-docker compose up -d
-```
-
-Isso vai criar um container MySQL 8.0, já com o banco `contacts` criado automaticamente. Aguarde alguns segundos até o container ficar pronto — é possível acompanhar com:
-
-```bash
-docker compose logs -f mysql
-```
-
-### 4. Criar a tabela de contatos
-
-Conecte-se ao banco (via DBeaver, MySQL Workbench, ou terminal) usando os dados do `.env`, e execute:
-
-```sql
-CREATE TABLE contacts (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
-  phone VARCHAR(255) NOT NULL
-);
-```
-
-### 5. Rodar a aplicação
-
-```bash
-npm run dev
-```
-
-O servidor sobe em `http://localhost:3000`.
+Nesse caso, o MySQL ainda pode rodar via Docker (`docker compose up -d mysql`), e a API roda separadamente com `npm install` seguido de `npm run dev`.
 
 ## Endpoints
 
@@ -165,8 +155,8 @@ A API usa `createPool` em vez de uma conexão única, já que requisições HTTP
 **Por que `mysql2` e não `mysql`**
 O pacote `mysql2` suporta prepared statements binários (mais seguro contra SQL Injection), tem suporte nativo a Promises (permitindo `async/await` sem callbacks) e é mais performático que o driver `mysql` original.
 
-**Banco em container Docker**
-O MySQL roda isolado em container para garantir reprodutibilidade: quem for rodar o projeto não precisa instalar MySQL na máquina, apenas subir o container com um único comando.
+**API e banco em containers Docker**
+Ambos rodam isolados em containers para garantir reprodutibilidade: quem for rodar o projeto não precisa instalar Node.js nem MySQL na máquina, apenas Docker. A tabela é criada automaticamente na primeira inicialização via script SQL montado no container do MySQL, eliminando o passo manual de configuração do banco.
 
 **DELETE retorna `204` sem corpo**
 Seguindo a semântica HTTP (RFC 7231), respostas `204 No Content` não devem conter corpo — a ausência de erro já comunica sucesso implicitamente.
