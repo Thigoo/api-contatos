@@ -2,12 +2,9 @@ import { Request, Response } from "express";
 import {
   addContact,
   findAllContacts,
+  updateContact,
 } from "../repositories/contact.repository";
 import { ContactDTO } from "../models/contact.model";
-
-interface MySqlError extends Error {
-  code?: string;
-}
 
 const getAllContacts = async (req: Request, res: Response) => {
   try {
@@ -36,13 +33,40 @@ const createContact = async (req: Request, res: Response) => {
 
     res.status(201).json(contact);
   } catch (error) {
-    const mySqlError = error as MySqlError;
-
-    if (mySqlError.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({ error: "Contact already exists" });
-    }
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-export { getAllContacts, createContact };
+const patchContact = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, phone } = req.body;
+
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: "Invalid id" });
+    }
+
+    if (!name && !phone) {
+      return res.status(400).json({ error: "Name and phone are required" });
+    }
+
+    const contactData: ContactDTO = {
+      name,
+      phone,
+    };
+
+    const contact = await updateContact(Number(id), contactData);
+
+    if (!contact) {
+      return res.status(404).json({ error: "Contact not found" });
+    }
+
+    res.status(200).json(contact);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const deleteContact = async (req: Request, res: Response) => {};
+
+export { getAllContacts, createContact, patchContact, deleteContact };

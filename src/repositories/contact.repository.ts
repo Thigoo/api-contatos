@@ -17,3 +17,38 @@ export const addContact = async (contact: ContactDTO): Promise<Contact> => {
     ...contact,
   };
 };
+
+export const updateContact = async (
+  id: number,
+  contact: Partial<ContactDTO>,
+): Promise<Contact | null> => {
+  const fields: string[] = [];
+  const values: string[] = [];
+
+  if (contact.name) {
+    fields.push("name = ?");
+    values.push(contact.name);
+  }
+
+  if (contact.phone) {
+    fields.push("phone = ?");
+    values.push(contact.phone);
+  }
+
+  const [result] = await pool.query<ResultSetHeader>(
+    `UPDATE contacts SET ${fields.join(", ")} WHERE id = ?`,
+    [...values, id],
+  );
+
+  if (result.affectedRows === 0) {
+    return null;
+  }
+
+  const [rows] = await pool.query<(Contact & RowDataPacket)[]>(
+    "SELECT * FROM contacts WHERE id = ?",
+    [id],
+  );
+
+  return rows[0] ?? null;
+};
+export const deleteContact = async (id: number) => {};
