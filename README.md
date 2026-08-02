@@ -6,7 +6,7 @@ API REST simples para gerenciamento de contatos, desenvolvida com Node.js, Expre
 
 - [Docker](https://www.docker.com/) e Docker Compose
 
-Não é necessário ter Node.js instalado - tanto a API quanto o banco de dados rodam em containers.
+Não é necessário ter Node.js instalado, tanto a API quanto o banco de dados rodam em containers.
 
 ## Configuração e execução
 
@@ -159,10 +159,10 @@ O pacote `mysql2` suporta prepared statements binários (mais seguro contra SQL 
 Ambos rodam isolados em containers para garantir reprodutibilidade: quem for rodar o projeto não precisa instalar Node.js nem MySQL na máquina, apenas Docker. A tabela é criada automaticamente na primeira inicialização via script SQL montado no container do MySQL, eliminando o passo manual de configuração do banco.
 
 **DELETE retorna `204` sem corpo**
-Seguindo a semântica HTTP (RFC 7231), respostas `204 No Content` não devem conter corpo - a ausência de erro já comunica sucesso implicitamente.
+Seguindo a semântica HTTP (RFC 7231), respostas `204 No Content` não devem conter corpo, a ausência de erro já comunica sucesso implicitamente.
 
 **Camadas separadas (route → controller → repository)**
 Rotas definem apenas o path e o método HTTP; controllers tratam a lógica de request/response; repositories concentram o acesso ao banco de dados. Essa separação facilita manutenção e testes.
 
 **Validação de nome**
-Implementada manualmente (sem biblioteca externa), dado o escopo simples da regra (mínimo duas palavras, cada uma com pelo menos 3 caracteres) - evitando dependência desnecessária para uma lógica de poucas linhas.
+Implementada manualmente (sem biblioteca externa), dado o escopo simples da regra (mínimo duas palavras, cada uma com pelo menos 3 caracteres), evitando dependência desnecessária para uma lógica de poucas linhas.
