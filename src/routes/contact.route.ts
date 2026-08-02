@@ -9,7 +9,6 @@ import {
 const contactRouter = Router();
 
 contactRouter.route("/").get(getAllContacts).post(createContact);
-
 contactRouter.route("/:id").patch(patchContact).delete(deleteContact);
 
 export default contactRouter;
