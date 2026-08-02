@@ -51,4 +51,11 @@ export const updateContact = async (
 
   return rows[0] ?? null;
 };
-export const deleteContact = async (id: number) => {};
+export const removeContact = async (id: number): Promise<boolean> => {
+  const [result] = await pool.query<ResultSetHeader>(
+    "DELETE FROM contacts WHERE id = ?",
+    [id],
+  );
+
+  return result.affectedRows > 0;
+};

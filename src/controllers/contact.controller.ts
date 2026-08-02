@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   addContact,
   findAllContacts,
+  removeContact,
   updateContact,
 } from "../repositories/contact.repository";
 import { ContactDTO } from "../models/contact.model";
@@ -67,6 +68,24 @@ const patchContact = async (req: Request, res: Response) => {
   }
 };
 
-const deleteContact = async (req: Request, res: Response) => {};
+const deleteContact = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: "Invalid id" });
+    }
+
+    const deleted = await removeContact(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Contact not found" });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 export { getAllContacts, createContact, patchContact, deleteContact };
