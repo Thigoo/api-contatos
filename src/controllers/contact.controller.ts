@@ -6,6 +6,7 @@ import {
   updateContact,
 } from "../repositories/contact.repository";
 import { ContactDTO } from "../models/contact.model";
+import { validateName } from "../utils/validateName";
 
 const getAllContacts = async (req: Request, res: Response) => {
   try {
@@ -23,6 +24,15 @@ const createContact = async (req: Request, res: Response) => {
 
     if (!name || !phone) {
       return res.status(400).json({ error: "Name and phone are required" });
+    }
+
+    const validName = validateName(name);
+    if (!validName) {
+      return res
+        .status(400)
+        .json({
+          error: "Name must have at least 2 words with 3+ characters each",
+        });
     }
 
     const contactData: ContactDTO = {
@@ -49,6 +59,13 @@ const patchContact = async (req: Request, res: Response) => {
 
     if (!name && !phone) {
       return res.status(400).json({ error: "Name and phone are required" });
+    }
+
+    const validName = validateName(name);
+    if (!validName) {
+      return res.status(400).json({
+        error: "Name must have at least 2 words with 3+ characters each",
+      });
     }
 
     const contactData: ContactDTO = {
