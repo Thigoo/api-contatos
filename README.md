@@ -84,7 +84,7 @@ Nesse caso, o MySQL ainda pode rodar via Docker (`docker compose up -d mysql`), 
 
 **Possíveis erros:**
 
-- `400` — campos ausentes ou nome inválido (mínimo duas palavras, cada uma com pelo menos 3 letras)
+- `400` - campos ausentes ou nome inválido (mínimo duas palavras, cada uma com pelo menos 3 letras)
 
 ---
 
@@ -110,7 +110,7 @@ Nesse caso, o MySQL ainda pode rodar via Docker (`docker compose up -d mysql`), 
 
 `PATCH /contacts/:id`
 
-**Body** (aceita atualização parcial — `name`, `phone`, ou ambos):
+**Body** (aceita atualização parcial - `name`, `phone`, ou ambos):
 
 ```json
 {
@@ -131,8 +131,8 @@ Nesse caso, o MySQL ainda pode rodar via Docker (`docker compose up -d mysql`), 
 
 **Possíveis erros:**
 
-- `400` — id inválido, ou nenhum campo enviado, ou nome inválido
-- `404` — contato não encontrado
+- `400` - id inválido, ou nenhum campo enviado, ou nome inválido
+- `404` - contato não encontrado
 
 ---
 
@@ -144,8 +144,8 @@ Nesse caso, o MySQL ainda pode rodar via Docker (`docker compose up -d mysql`), 
 
 **Possíveis erros:**
 
-- `400` — id inválido
-- `404` — contato não encontrado
+- `400` - id inválido
+- `404` - contato não encontrado
 
 ## Decisões técnicas
 
@@ -159,10 +159,10 @@ O pacote `mysql2` suporta prepared statements binários (mais seguro contra SQL 
 Ambos rodam isolados em containers para garantir reprodutibilidade: quem for rodar o projeto não precisa instalar Node.js nem MySQL na máquina, apenas Docker. A tabela é criada automaticamente na primeira inicialização via script SQL montado no container do MySQL, eliminando o passo manual de configuração do banco.
 
 **DELETE retorna `204` sem corpo**
-Seguindo a semântica HTTP (RFC 7231), respostas `204 No Content` não devem conter corpo — a ausência de erro já comunica sucesso implicitamente.
+Seguindo a semântica HTTP (RFC 7231), respostas `204 No Content` não devem conter corpo - a ausência de erro já comunica sucesso implicitamente.
 
 **Camadas separadas (route → controller → repository)**
 Rotas definem apenas o path e o método HTTP; controllers tratam a lógica de request/response; repositories concentram o acesso ao banco de dados. Essa separação facilita manutenção e testes.
 
 **Validação de nome**
-Implementada manualmente (sem biblioteca externa), dado o escopo simples da regra (mínimo duas palavras, cada uma com pelo menos 3 caracteres) — evitando dependência desnecessária para uma lógica de poucas linhas.
+Implementada manualmente (sem biblioteca externa), dado o escopo simples da regra (mínimo duas palavras, cada uma com pelo menos 3 caracteres) - evitando dependência desnecessária para uma lógica de poucas linhas.
