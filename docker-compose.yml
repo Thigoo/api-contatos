@@ -10,6 +10,25 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    build: .
+    container_name: contacts_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: admin
+      DB_NAME: contacts
+    depends_on:
+      - mysql
+    volumes:
+      - .:/app
+      - /app/node_modules
 
 volumes:
   mysql_data:
