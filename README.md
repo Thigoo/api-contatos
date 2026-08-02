@@ -147,6 +147,24 @@ Nesse caso, o MySQL ainda pode rodar via Docker (`docker compose up -d mysql`), 
 - `400` - id inválido
 - `404` - contato não encontrado
 
+## Testes automatizados
+
+O projeto conta com testes escritos em [Jest](https://jestjs.io/), cobrindo dois níveis:
+
+- **Testes unitários** — validam funções isoladas, sem dependências externas (ex: `validateName`, que testa as regras de formatação de nome).
+- **Testes de integração** — validam o comportamento das rotas HTTP (via [supertest](https://github.com/ladjs/supertest)) integrando Express e controllers. A camada de acesso ao banco (`repository`) é mockada, garantindo que os testes rodem de forma isolada e rápida, sem depender de um banco de dados real.
+
+### Como rodar os testes
+
+Os testes rodam localmente (fora do container Docker), exigindo Node.js instalado:
+
+```bash
+npm install
+npm test
+```
+
+Para gerar relatório de cobertura, habilite `collectCoverage: true` em `jest.config.cjs`. A pasta `coverage/` gerada não deve ser versionada (já está listada no `.gitignore`).
+
 ## Decisões técnicas
 
 **Pool de conexões (`mysql2/promise`)**
